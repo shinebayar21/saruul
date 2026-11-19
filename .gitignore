@@ -1,0 +1,9 @@
+node_modules/
+.env
+*.log
+
+# Ажиллах үеийн өгөгдөл — захиалагчийн нэр, утас, хаяг агуулна. Репод оруулахгүй.
+orders.json
+stock.json
+products.json
+public/images/products/

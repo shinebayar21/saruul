@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="mn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <base href="/">
+  <title>EVA Clear Mongolia</title>
+  <meta name="description" content="EVA Clear Mongolia — онлайн дэлгүүр">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="top">
+    <div class="wrap top-in">
+      <a href="/" class="logo"><span class="logo-mark">E</span><span id="shopName">EVA Clear</span></a>
+      <nav class="nav">
+        <a href="#products">Бараа</a>
+        <a href="#how">Захиалах заавар</a>
+        <a href="#contact">Холбоо барих</a>
+      </nav>
+      <button class="cart-btn" id="cartBtn" aria-label="Сагс нээх">
+        🛒 <span>Сагс</span> <b id="cartCount">0</b>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Барааны хуудас (/p/<id>) -->
+    <section class="wrap pd" id="pd" hidden>
+      <a class="back" href="/">← Дэлгүүр рүү буцах</a>
+      <div class="pd-in">
+        <div class="pd-media">
+          <div class="pic" id="dPic"></div>
+          <div class="thumbs" id="dThumbs"></div>
+        </div>
+        <div class="pd-info">
+          <span class="badge pd-badge" id="dBadge" hidden></span>
+          <h1 id="dName"></h1>
+          <div class="price" id="dPrice"></div>
+          <p class="stock-state" id="dStock"></p>
+          <p class="details" id="dDetails"></p>
+          <div class="pd-buy">
+            <div class="qty big"><button type="button" id="dMinus" aria-label="Хасах">−</button><span id="dQty">1</span><button type="button" id="dPlus" aria-label="Нэмэх">+</button></div>
+            <button class="btn primary" type="button" id="dAdd">Сагсанд нэмэх</button>
+            <button class="btn ghost" type="button" id="dBuy">Шууд захиалах</button>
+          </div>
+          <div class="share">
+            <span>Хуваалцах:</span>
+            <a id="shareFb" target="_blank" rel="noopener">Facebook</a>
+            <a id="shareMsg" target="_blank" rel="noopener">Messenger</a>
+            <button type="button" id="shareCopy">Линк хуулах</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="hero">
+      <div class="wrap hero-in">
+        <div>
+          <p class="eyebrow" id="heroCity"></p>
+          <h1 id="heroTitle"></h1>
+          <p class="lead" id="heroText"></p>
+          <div class="hero-cta">
+            <a class="btn primary" href="#products">Одоо захиалах</a>
+            <a class="btn ghost" id="heroMsg" target="_blank" rel="noopener">Messenger-ээр асуух</a>
+          </div>
+        </div>
+        <div class="hero-art" aria-hidden="true"><div class="bubble b1"></div><div class="bubble b2"></div><div class="bubble b3"></div></div>
+      </div>
+    </section>
+
+    <section class="wrap benefits" id="benefits"></section>
+
+    <section class="wrap" id="products">
+      <h2 id="gridTitle">Манай бүтээгдэхүүн</h2>
+      <div class="grid" id="grid"></div>
+    </section>
+
+    <section class="wrap" id="how">
+      <h2>Хэрхэн захиалах вэ?</h2>
+      <ol class="steps">
+        <li><b>1</b><span>Бараагаа сонгоод «Сагсанд нэмэх» дарна</span></li>
+        <li><b>2</b><span>Сагсаа нээж нэр, утас, хаягаа бичээд QR кодоор төлнө</span></li>
+        <li><b>3</b><span>Төлбөр орсны дараа бид холбогдож хүргэлтээ тохирно</span></li>
+      </ol>
+    </section>
+  </main>
+
+  <footer class="foot" id="contact">
+    <div class="wrap foot-in">
+      <div>
+        <div class="logo light"><span class="logo-mark">E</span><span id="footName"></span></div>
+        <p id="footCity"></p>
+      </div>
+      <div class="foot-links">
+        <a id="footPhone"></a>
+        <a id="footFb" target="_blank" rel="noopener">Facebook хуудас</a>
+        <a id="footMsg" target="_blank" rel="noopener">Messenger</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Сагс -->
+  <div class="overlay" id="overlay" hidden></div>
+  <aside class="drawer" id="drawer" aria-hidden="true" aria-label="Сагс">
+    <div class="drawer-head">
+      <h3>Таны сагс</h3>
+      <button class="x" id="closeCart" aria-label="Хаах">✕</button>
+    </div>
+    <div class="drawer-body">
+      <div id="cartItems"></div>
+      <div class="totals" id="totals"></div>
+
+      <form id="orderForm" novalidate>
+        <h4>Захиалгын мэдээлэл</h4>
+        <label>Нэр<input name="name" required maxlength="80" autocomplete="name"></label>
+        <label>Утас<input name="phone" required inputmode="numeric" maxlength="12" placeholder="8811 2233" autocomplete="tel"></label>
+        <label>Хүргэх хаяг<textarea name="address" required maxlength="300" rows="2" placeholder="Дүүрэг, хороо, байр, тоот"></textarea></label>
+        <label>Нэмэлт тайлбар<textarea name="note" maxlength="300" rows="2"></textarea></label>
+        <p class="err" id="formErr" hidden></p>
+        <button class="btn primary full" type="submit" id="submitBtn">Төлбөр төлөх</button>
+      </form>
+
+      <div class="pay" id="pay" hidden>
+        <h4>Төлбөр төлөх</h4>
+        <p class="pay-sum">Захиалга <b id="payNo"></b> · <b id="payTotal"></b></p>
+        <p class="demo-note" id="payDemoNote" hidden>⚠ ТУРШИЛТЫН QR — бодит төлбөр хийгдэхгүй</p>
+        <img class="qr" id="payQr" alt="Төлбөрийн QR код">
+        <p class="pay-hint">Банкны аппликэйшнээрээ QR кодыг уншуулж төлнө үү.</p>
+        <div class="pay-links" id="payLinks"></div>
+        <p class="waiting" id="payWaiting"><span class="spin"></span> Төлбөр хүлээж байна…</p>
+        <p class="err" id="payExpired" hidden>QR кодын хугацаа дууслаа. Сагсаа дахин бүрдүүлж захиална уу.</p>
+        <button class="btn ghost full" id="payDemoBtn" type="button" hidden>Туршилт: төлсөн болгох</button>
+      </div>
+
+      <div class="done" id="done" hidden>
+        <div class="done-ico">✓</div>
+        <h4>Төлбөр амжилттай!</h4>
+        <p id="doneText"></p>
+        <a class="btn ghost full" id="doneMsg" target="_blank" rel="noopener">Messenger-ээр мөн илгээх</a>
+        <button class="btn primary full" id="doneClose" type="button">Үргэлжлүүлэх</button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <script src="products.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
