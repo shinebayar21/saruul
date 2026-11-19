@@ -1,8 +1,8 @@
-// EVA Clear Mongolia — жижиг дэлгүүрийн сервер
+// Saruul Store — жижиг дэлгүүрийн сервер
 // Ажиллуулах:  node server.js   →  http://localhost:4321
 // Захиалгууд orders.json, бараа products.json, үлдэгдлийн баримтууд stock.json, холбоо барих/сошиал settings.json файлд хадгалагдана.
 // Удирдлагын самбар: http://localhost:4321/admin  (нууц түлхүүр: ADMIN_KEY орчны хувьсагч, анхдагч нь "change-me")
-// SITE_URL (жишээ нь https://evaclear.mn) өгвөл Facebook-т хуваалцах линкүүд түүгээр үүснэ.
+// SITE_URL (жишээ нь https://saruul.store) өгвөл Facebook-т хуваалцах линкүүд түүгээр үүснэ.
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
@@ -278,7 +278,7 @@ function productPage(req, res, id) {
   const p = readProducts().find((x) => x.id === id && x.active);
   if (!p) {
     return send(res, 404, `<!doctype html><html lang="mn"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Бараа олдсонгүй — ${esc(shop.name)}</title><link rel="icon" href="/images/logo-mark.jpg"><link rel="stylesheet" href="/styles.css"></head>
+<title>Бараа олдсонгүй — ${esc(shop.name)}</title><link rel="icon" href="/images/saruul-mark.jpg"><link rel="stylesheet" href="/styles.css"></head>
 <body><main class="wrap notfound"><h1>Бараа олдсонгүй</h1><p>Энэ бараа худалдаанаас хасагдсан эсвэл линк буруу байна.</p>
 <a class="btn primary" href="/">Дэлгүүр рүү буцах</a></main></body></html>`, TYPES[".html"]);
   }
@@ -491,7 +491,7 @@ function phoneVal(v, field) {
 }
 function emailVal(v) {
   v = clean(v, 120);
-  if (v && !/^[^\s@<>"'()]+@[^\s@<>"'()]+\.[^\s@<>"'()]+$/.test(v)) throw fieldErr("email", CONTACT.email, "хаяг буруу байна (жишээ нь info@evaclear.mn)");
+  if (v && !/^[^\s@<>"'()]+@[^\s@<>"'()]+\.[^\s@<>"'()]+$/.test(v)) throw fieldErr("email", CONTACT.email, "хаяг буруу байна (жишээ нь info@saruul.store)");
   return v;
 }
 // Холбоос: зөвхөн http(s). @нэр, утасны дугаар, https:// -гүй хаягийг зөв холбоос болгоно.
@@ -599,4 +599,4 @@ http.createServer((req, res) => {
     if (err) return send(res, 404, "Олдсонгүй", "text/plain; charset=utf-8");
     send(res, 200, data, TYPES[path.extname(file).toLowerCase()] || "application/octet-stream");
   });
-}).listen(PORT, () => console.log(`EVA Clear дэлгүүр: http://localhost:${PORT}  (төлбөр: ${pay.name})`));
+}).listen(PORT, () => console.log(`Saruul Store дэлгүүр: http://localhost:${PORT}  (төлбөр: ${pay.name})`));

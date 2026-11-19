@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>Удирдлага — EVA Clear</title>
-<link rel="icon" href="/images/logo-mark.jpg">
+<title>Удирдлага — Saruul Store</title>
+<link rel="icon" href="/images/saruul-mark.jpg">
 <style>
-:root { --bg:#f5f3ef; --card:#fff; --ink:#14243f; --muted:#6b748a; --line:#e8e3da; --grid:#f0ece5; --brand:#16294a; --side:#101d36; --gold:#c9a66b;
+:root { --bg:#fbf0ee; --card:#fffaf8; --ink:#3d1528; --muted:#8a6a78; --line:#efdcd9; --grid:#f6e8e5; --brand:#6b1f43; --side:#3a0f26; --gold:#d4a96a;
   --good:#1b7f3b; --good-bg:#e4f4e9; --warn:#9a5b00; --warn-bg:#fdf0d5; --bad:#b3261e; --bad-bg:#fbe6e4; --info:#1f4f9c; --info-bg:#e5edfa; }
 * { box-sizing:border-box; }
 html, body { height:100%; }
@@ -18,21 +18,21 @@ a { color:var(--info); }
 
 /* ---- layout ---- */
 .app { display:grid; grid-template-columns:240px 1fr; min-height:100%; }
-.side { background:var(--side); color:#c5cee0; display:flex; flex-direction:column; position:sticky; top:0; height:100vh; }
+.side { background:var(--side); color:#ecd6de; display:flex; flex-direction:column; position:sticky; top:0; height:100vh; }
 .brand { display:flex; align-items:center; gap:12px; padding:20px 18px 18px; border-bottom:1px solid rgba(255,255,255,.08); }
-.brand img { width:42px; height:42px; border-radius:50%; background:#fbf9f6; }
+.brand img { width:42px; height:42px; border-radius:50%; background:#fdf5ec; }
 .brand b { display:block; color:#fff; font-family:Georgia,serif; font-size:1.05rem; font-weight:600; letter-spacing:.02em; }
 .brand small { font-size:.72rem; letter-spacing:.14em; text-transform:uppercase; color:var(--gold); }
 .menu { padding:14px 10px; display:flex; flex-direction:column; gap:2px; flex:1; overflow-y:auto; }
-.menu-label { font-size:.68rem; letter-spacing:.12em; text-transform:uppercase; color:#7482a0; padding:10px 10px 6px; }
-.menu a { display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:10px; color:#c5cee0; text-decoration:none; font-weight:500; border-left:3px solid transparent; }
+.menu-label { font-size:.68rem; letter-spacing:.12em; text-transform:uppercase; color:#b995a6; padding:10px 10px 6px; }
+.menu a { display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:10px; color:#ecd6de; text-decoration:none; font-weight:500; border-left:3px solid transparent; }
 .menu a:hover { background:rgba(255,255,255,.06); color:#fff; }
 .menu a.on { background:rgba(255,255,255,.1); color:#fff; border-left-color:var(--gold); }
 .menu svg { width:18px; height:18px; flex:none; stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
-.menu .count { margin-left:auto; background:var(--gold); color:#101d36; border-radius:999px; font-size:.72rem; font-weight:700; padding:1px 8px; }
+.menu .count { margin-left:auto; background:var(--gold); color:#3a0f26; border-radius:999px; font-size:.72rem; font-weight:700; padding:1px 8px; }
 .menu .count.bad { background:#e8837b; }
 .side-foot { padding:12px 10px 16px; border-top:1px solid rgba(255,255,255,.08); display:flex; flex-direction:column; gap:2px; }
-.side-foot a, .side-foot button { display:flex; align-items:center; gap:12px; padding:9px 12px; border-radius:10px; color:#c5cee0; text-decoration:none; background:none; border:0; cursor:pointer; text-align:left; }
+.side-foot a, .side-foot button { display:flex; align-items:center; gap:12px; padding:9px 12px; border-radius:10px; color:#ecd6de; text-decoration:none; background:none; border:0; cursor:pointer; text-align:left; }
 .side-foot a:hover, .side-foot button:hover { background:rgba(255,255,255,.06); color:#fff; }
 .side-foot svg { width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
 
@@ -77,7 +77,7 @@ a { color:var(--info); }
 table { border-collapse:collapse; width:100%; }
 th { text-align:left; color:var(--muted); font-weight:600; font-size:.78rem; text-transform:uppercase; letter-spacing:.04em; padding:9px 10px; border-bottom:1px solid var(--line); white-space:nowrap; }
 td { padding:10px; border-bottom:1px solid var(--grid); vertical-align:top; }
-tbody tr:hover td { background:#faf8f4; }
+tbody tr:hover td { background:#fdf5f3; }
 tbody tr:last-child td { border-bottom:0; }
 tr.void td { color:var(--muted); }
 tr.void td b { text-decoration:line-through; }
@@ -95,7 +95,7 @@ td input.note { border:1px solid var(--line); border-radius:8px; padding:5px 8px
 .tools input { flex:1; min-width:180px; }
 .tools input[type=date] { flex:none; min-width:0; }
 .empty { text-align:center; color:var(--muted); padding:28px 0; }
-.thumb { width:44px; height:44px; border-radius:8px; object-fit:cover; background:linear-gradient(135deg,#ece6da,#f8f5ef); display:block; flex:none; }
+.thumb { width:44px; height:44px; border-radius:8px; object-fit:cover; background:linear-gradient(135deg,#f6dcdf,#fdf1ec); display:block; flex:none; }
 .prod { display:flex; gap:12px; align-items:center; }
 .small { font-size:.8rem; }
 .printonly { display:none; }
@@ -129,7 +129,7 @@ th.sort { cursor:pointer; user-select:none; } th.sort:hover, th.sorted { color:v
 .imgs .im { position:relative; }
 .imgs img { width:76px; height:76px; object-fit:cover; border-radius:10px; border:1px solid var(--line); display:block; }
 .imgs .im button { position:absolute; top:-7px; right:-7px; width:22px; height:22px; border-radius:50%; border:1px solid var(--line); background:#fff; cursor:pointer; font-size:.7rem; line-height:1; }
-.upl { width:76px; height:76px; border:1.5px dashed #cfc9bd; border-radius:10px; display:grid; place-items:center; text-align:center; cursor:pointer; color:var(--muted); font-size:.78rem; font-weight:600; }
+.upl { width:76px; height:76px; border:1.5px dashed #e0c4c8; border-radius:10px; display:grid; place-items:center; text-align:center; cursor:pointer; color:var(--muted); font-size:.78rem; font-weight:600; }
 .upl:hover { border-color:var(--brand); color:var(--brand); }
 .lines td { padding:6px 6px 6px 0; border:0; }
 .lines select { max-width:none; width:100%; }
@@ -194,8 +194,8 @@ input.bad, textarea.bad { border-color:var(--bad) !important; outline-color:var(
 <body>
 <div class="login" id="login">
   <form id="loginForm">
-    <img src="/images/logo-mark.jpg" alt="">
-    <h2>EVA Clear Mongolia</h2>
+    <img src="/images/saruul-mark.jpg" alt="">
+    <h2>Saruul Store</h2>
     <p class="muted">Удирдлагын хэсэг</p>
     <input type="password" id="keyInput" placeholder="Нууц түлхүүр" autocomplete="current-password" autofocus>
     <button type="submit">Нэвтрэх</button>
@@ -205,7 +205,7 @@ input.bad, textarea.bad { border-color:var(--bad) !important; outline-color:var(
 
 <div class="app">
   <aside class="side" id="side">
-    <div class="brand"><img src="/images/logo-mark.jpg" alt=""><div><b>EVA Clear</b><small>Admin</small></div></div>
+    <div class="brand"><img src="/images/saruul-mark.jpg" alt=""><div><b>Saruul Store</b><small>Admin</small></div></div>
     <nav class="menu" id="menu">
       <div class="menu-label">Үндсэн</div>
       <a href="#dashboard" data-page="dashboard"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>Хянах самбар</a>
@@ -622,22 +622,22 @@ input.bad, textarea.bad { border-color:var(--bad) !important; outline-color:var(
     var s = function (tag, a) { var e = document.createElementNS(NS, tag); for (var k in a) e.setAttribute(k, a[k]); svg.appendChild(e); return e; };
     var y = function (v) { return T + (H - T - B) * (1 - v / top); };
     for (var g = 0; g <= top + 1e-9; g += step) {
-      s("line", { x1: L, x2: W - R, y1: y(g), y2: y(g), stroke: g ? "#f0ece5" : "#cfc9bd", "stroke-width": 1 });
-      s("text", { x: L - 8, y: y(g) + 4, "text-anchor": "end", "font-size": 11, fill: "#6b748a" }).textContent = short(g);
+      s("line", { x1: L, x2: W - R, y1: y(g), y2: y(g), stroke: g ? "#f6e8e5" : "#e0c4c8", "stroke-width": 1 });
+      s("text", { x: L - 8, y: y(g) + 4, "text-anchor": "end", "font-size": 11, fill: "#8a6a78" }).textContent = short(g);
     }
     var slot = (W - L - R) / rows.length, bw = Math.max(2, Math.min(34, slot - 2)), every = Math.ceil(rows.length / 10);
     var tip = h("div", { className: "tip", hidden: true }); box.appendChild(tip);
     rows.forEach(function (r, i) {
       var x = L + slot * i + (slot - bw) / 2, yy = y(r.revenue), bh = H - B - yy, rad = Math.min(4, bw / 2, bh);
-      var bar = r.revenue ? s("path", { d: "M" + x + "," + (H - B) + "V" + (yy + rad) + "Q" + x + "," + yy + " " + (x + rad) + "," + yy + "H" + (x + bw - rad) + "Q" + (x + bw) + "," + yy + " " + (x + bw) + "," + (yy + rad) + "V" + (H - B) + "Z", fill: "#16294a" }) : null;
-      if (i % every === 0) s("text", { x: x + bw / 2, y: H - 8, "text-anchor": "middle", "font-size": 11, fill: "#6b748a" }).textContent = r.tick || r.day.slice(5).replace("-", "/");
+      var bar = r.revenue ? s("path", { d: "M" + x + "," + (H - B) + "V" + (yy + rad) + "Q" + x + "," + yy + " " + (x + rad) + "," + yy + "H" + (x + bw - rad) + "Q" + (x + bw) + "," + yy + " " + (x + bw) + "," + (yy + rad) + "V" + (H - B) + "Z", fill: "#6b1f43" }) : null;
+      if (i % every === 0) s("text", { x: x + bw / 2, y: H - 8, "text-anchor": "middle", "font-size": 11, fill: "#8a6a78" }).textContent = r.tick || r.day.slice(5).replace("-", "/");
       var hit = s("rect", { x: L + slot * i, y: T, width: slot, height: H - T - B, fill: "transparent" });
       hit.addEventListener("mouseenter", function () {
-        if (bar) bar.setAttribute("fill", "#2f4a7a");
+        if (bar) bar.setAttribute("fill", "#93355f");
         tip.textContent = (r.label || r.day) + " · " + money(r.revenue) + " · " + r.paid + " захиалга";
         tip.style.left = Math.min(Math.max((x + bw / 2) / W * 100, 14), 86) + "%"; tip.style.top = (yy / H * 100) + "%"; tip.hidden = false;
       });
-      hit.addEventListener("mouseleave", function () { if (bar) bar.setAttribute("fill", "#16294a"); tip.hidden = true; });
+      hit.addEventListener("mouseleave", function () { if (bar) bar.setAttribute("fill", "#6b1f43"); tip.hidden = true; });
     });
     box.appendChild(svg);
   }
@@ -1215,7 +1215,7 @@ input.bad, textarea.bad { border-color:var(--bad) !important; outline-color:var(
     var title = { "in": "Орлогын баримт", "out": "Зарлагын баримт", "act": "АКТ", "sale": "Борлуулалтын бичилт", "return": "Буцаалтын бичилт" }[d.type];
     box.appendChild(h("h2", { text: title + " № " + d.no + (d.voided ? " (ХҮЧИНГҮЙ)" : "") }));
     box.appendChild(h("div", { className: "meta" }, [
-      h("div", { text: "EVA Clear Mongolia" }), h("div", { text: "Огноо: " + d.date }),
+      h("div", { text: "Saruul Store" }), h("div", { text: "Огноо: " + d.date }),
       d.reason ? h("div", { text: "Шалтгаан: " + d.reason }) : null, d.note ? h("div", { text: "Тайлбар: " + d.note }) : null,
       d.orderNo ? h("div", { text: "Захиалга: #" + d.orderNo }) : null]));
     box.appendChild(t);
@@ -1288,10 +1288,10 @@ input.bad, textarea.bad { border-color:var(--bad) !important; outline-color:var(
     wechat: "M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 0 1 .213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 0 0 .167-.054l1.903-1.114a.864.864 0 0 1 .717-.098 10.16 10.16 0 0 0 2.837.403c.276 0 .543-.027.811-.05-.857-2.578.157-4.972 1.932-6.446 1.703-1.415 3.882-1.98 5.853-1.838-.576-3.583-4.196-6.348-8.596-6.348zM5.785 5.991c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178A1.17 1.17 0 0 1 4.623 7.17c0-.651.52-1.18 1.162-1.18zm5.813 0c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178 1.17 1.17 0 0 1-1.162-1.178c0-.651.52-1.18 1.162-1.18zm5.34 2.867c-1.797-.052-3.746.512-5.28 1.786-1.72 1.428-2.687 3.72-1.78 6.22.942 2.453 3.666 4.229 6.884 4.229.826 0 1.622-.12 2.361-.336a.722.722 0 0 1 .598.082l1.584.926a.272.272 0 0 0 .14.047c.134 0 .24-.111.24-.247 0-.06-.023-.12-.038-.177l-.327-1.233a.582.582 0 0 1-.023-.156.49.49 0 0 1 .201-.398C23.024 18.48 24 16.82 24 14.98c0-3.21-2.931-5.837-6.656-6.088V8.89c-.135-.01-.27-.027-.407-.03zm-2.53 3.274c.535 0 .969.44.969.982a.976.976 0 0 1-.969.983.976.976 0 0 1-.969-.983c0-.542.434-.982.97-.982zm4.844 0c.535 0 .969.44.969.982a.976.976 0 0 1-.969.983.976.976 0 0 1-.969-.983c0-.542.434-.982.969-.982z",
   };
   // [түлхүүр, нэр, жишээ (placeholder), төрөл / брэндийн өнгө, хэдэн тэмдэгт хүртэл]
-  var SET_CONTACT = [["phone", "Утас", "8811 2233", "tel", 40], ["phone2", "Нэмэлт утас", "9911 2233", "tel", 40], ["email", "И-мэйл", "info@evaclear.mn", "email", 120],
+  var SET_CONTACT = [["phone", "Утас", "8811 2233", "tel", 40], ["phone2", "Нэмэлт утас", "9911 2233", "tel", 40], ["email", "И-мэйл", "info@saruul.store", "email", 120],
     ["messenger", "Messenger холбоос", "m.me/таны-хуудас", "url", 300], ["address", "Хаяг", "Улаанбаатар, … дүүрэг, … хороо, … байр", "area", 300], ["hours", "Ажлын цаг", "Даваа–Баасан 10:00–19:00, Бямба 11:00–17:00", "area", 200]];
-  var SET_SOCIAL = [["facebook", "Facebook", "facebook.com/таны-хуудас", "#1877f2"], ["instagram", "Instagram", "@evaclear эсвэл instagram.com/evaclear", "#e4405f"],
-    ["telegram", "Telegram", "@evaclear эсвэл t.me/evaclear", "#26a5e4"], ["discord", "Discord", "discord.gg/урилгын-код", "#5865f2"],
+  var SET_SOCIAL = [["facebook", "Facebook", "facebook.com/таны-хуудас", "#1877f2"], ["instagram", "Instagram", "@saruul эсвэл instagram.com/saruul", "#e4405f"],
+    ["telegram", "Telegram", "@saruul эсвэл t.me/saruul", "#26a5e4"], ["discord", "Discord", "discord.gg/урилгын-код", "#5865f2"],
     ["whatsapp", "WhatsApp", "8811 2233 эсвэл wa.me/97688112233", "#25d366"], ["wechat", "WeChat", "WeChat ID эсвэл https://… холбоос", "#07c160"]];
   var setI = {}, setHint = {}, setLoaded = false;
   function brandIco(d) {

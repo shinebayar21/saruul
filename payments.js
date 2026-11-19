@@ -16,7 +16,7 @@ const demo = {
   // Захиалга үүсэхэд дуудагдана → нэхэмжлэх + QR буцаана
   async createInvoice(order) {
     const invoiceId = "DEMO-" + crypto.randomBytes(6).toString("hex");
-    const qrText = `TURSHILT - bodit tulbur bish | EVA Clear #${order.orderNo} | ${order.total} MNT | ${invoiceId}`;
+    const qrText = `TURSHILT - bodit tulbur bish | Saruul Store #${order.orderNo} | ${order.total} MNT | ${invoiceId}`;
     return { invoiceId, qrImage: await qrImage(qrText), links: [] };
   },
 
