@@ -133,8 +133,30 @@ function markPaid(match) {
   return o;
 }
 
+const CSP_BASE = "default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; ";
+const CSP_SHOP = CSP_BASE + "script-src 'self'";
+const CSP_ADMIN = CSP_BASE + "script-src 'self' 'unsafe-inline'";
+
+// ---------- хүсэлтийн тоог хязгаарлах (нэг IP-ээс) ----------
+const clientIp = (req) => String(req.headers["x-forwarded-for"] || "").split(",")[0].trim() || req.socket.remoteAddress || "?";
+const hits = new Map();
+// true = хязгаар хэтэрсэн. count=false бол зөвхөн шалгана (тоолохгүй).
+function limited(req, bucket, max, windowMs, count) {
+  const k = bucket + "|" + clientIp(req), now = Date.now();
+  let h = hits.get(k);
+  if (!h || now > h.until) { h = { n: 0, until: now + windowMs }; hits.set(k, h); }
+  if (count !== false) h.n++;
+  return h.n > max;
+}
+setInterval(() => { const now = Date.now(); for (const [k, h] of hits) if (now > h.until) hits.delete(k); }, 60000).unref();
+const tooMany = (res) => send(res, 429, { error: "Хэт олон хүсэлт илгээлээ. Хэдэн минутын дараа дахин оролдоно уу." });
+
 function send(res, code, body, type) {
-  res.writeHead(code, { "Content-Type": type || "application/json; charset=utf-8", "X-Content-Type-Options": "nosniff", "Cache-Control": "no-store" });
+  const head = { "Content-Type": type || "application/json; charset=utf-8", "X-Content-Type-Options": "nosniff", "Cache-Control": "no-store",
+    "X-Frame-Options": "DENY", "Referrer-Policy": "strict-origin-when-cross-origin", "Strict-Transport-Security": "max-age=15552000" };
+  // Хуудсанд гадны скрипт ачаалахыг хориглоно (админ хуудас дотоод скрипттэй тул тусдаа дүрэмтэй)
+  if (type === TYPES[".html"]) head["Content-Security-Policy"] = (res.adminPage ? CSP_ADMIN : CSP_SHOP);
+  res.writeHead(code, head);
   res.end(typeof body === "string" || Buffer.isBuffer(body) ? body : JSON.stringify(body));
 }
 
@@ -155,7 +177,9 @@ const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&
 const clean = (v, max) => (typeof v === "string" ? v.trim().slice(0, max) : "");
 const findByToken = (no, token) => (o) => o.orderNo === Number(no) && typeof token === "string" && token.length > 10 && o.token === token;
 
+let reservedNo = 0; // нэхэмжлэх үүсэхийг хүлээх зуур өөр захиалга ижил дугаар авахаас сэргийлнэ
 async function handleOrder(req, res) {
+  if (limited(req, "order", 8, 10 * 60000)) return tooMany(res);
   const b = await readJson(req);
   if (!b) return send(res, 400, { error: "Буруу хүсэлт" });
   const name = clean(b.name, 80), address = clean(b.address, 300), note = clean(b.note, 300);
@@ -182,9 +206,10 @@ async function handleOrder(req, res) {
   const free = shop.freeDeliveryFrom > 0 && sub >= shop.freeDeliveryFrom;
   const delivery = free ? 0 : shop.deliveryFee;
 
-  const orders = readOrders();
+  let orders = readOrders();
+  reservedNo = Math.max(reservedNo, orders.length ? orders[orders.length - 1].orderNo : 1000) + 1;
   const order = {
-    orderNo: (orders.length ? orders[orders.length - 1].orderNo : 1000) + 1,
+    orderNo: reservedNo,
     token: crypto.randomBytes(16).toString("hex"),
     time: new Date().toISOString(), status: "pending", fulfil: "new", stockDeducted: false,
     name, phone, address, note, items, sub, delivery, total: sub + delivery,
@@ -194,12 +219,13 @@ async function handleOrder(req, res) {
   try { invoice = await pay.createInvoice(order); }
   catch (e) { console.error("Нэхэмжлэх үүсгэхэд алдаа:", e.message); return send(res, 502, { error: "Төлбөрийн нэхэмжлэх үүсгэж чадсангүй" }); }
   order.payment = { provider: pay.name, invoiceId: invoice.invoiceId };
+  orders = readOrders(); // хүлээх зуур нэмэгдсэн захиалгыг дарж бичихгүй
   orders.push(order);
   writeOrders(orders);
   console.log(`Шинэ захиалга #${order.orderNo}: ${name} ${phone} — ${order.total}₮ (төлбөр хүлээж байна)`);
   send(res, 200, {
     ok: true, orderNo: order.orderNo, token: order.token, total: order.total,
-    payment: { qrImage: invoice.qrImage, links: invoice.links || [], demo: pay.demo },
+    payment: { qrImage: invoice.qrImage, links: invoice.links || [], demo: pay.demo, demoPay: DEMO_PAY },
   });
 }
 
@@ -229,8 +255,10 @@ async function handleCallback(req, res) {
 }
 
 // ЗӨВХӨН demo горимд: "туршилтаар төлсөн болгох" товч
+// DEMO_PAY=off бол хаалттай (нийтэд нээлттэй сайтад хэн ч төлбөргүйгээр "төлсөн" болгож чадахгүй; админ гараар тэмдэглэнэ)
+const DEMO_PAY = pay.demo && process.env.DEMO_PAY !== "off";
 async function handleDemoPay(req, res) {
-  if (!pay.demo) return send(res, 404, { error: "Олдсонгүй" });
+  if (!DEMO_PAY) return send(res, 404, { error: "Олдсонгүй" });
   const b = await readJson(req);
   const o = b && markPaid(findByToken(b.orderNo, b.token));
   send(res, o ? 200 : 404, o ? { status: o.status } : { error: "Захиалга олдсонгүй" });
@@ -535,7 +563,12 @@ seedProducts();
 http.createServer((req, res) => {
   const url = new URL(req.url, "http://localhost");
   const fail = (e) => { console.error(e); if (!res.headersSent) send(res, 500, { error: "Серверийн алдаа" }); };
-  const admin = (fn) => (isAdmin(req) ? Promise.resolve().then(() => fn(req, res)).catch(fail) : send(res, 403, { error: "Хандах эрхгүй" }));
+  const admin = (fn) => {
+    if (limited(req, "adminfail", 10, 15 * 60000, false)) return tooMany(res); // буруу түлхүүрээр олон оролдвол түр хаана
+    if (isAdmin(req)) return Promise.resolve().then(() => fn(req, res)).catch(fail);
+    limited(req, "adminfail", 10, 15 * 60000);
+    return send(res, 403, { error: "Хандах эрхгүй" });
+  };
   try {
     if (req.method === "POST") {
       if (url.pathname === "/api/order") return handleOrder(req, res).catch(fail);
@@ -546,7 +579,8 @@ http.createServer((req, res) => {
     if (req.method !== "GET" && req.method !== "HEAD") return send(res, 405, { error: "Method not allowed" });
     if (url.pathname === "/api/order/status") return handleStatus(url, res).catch(fail);
     if (ADMIN_GET[url.pathname]) return admin(ADMIN_GET[url.pathname]);
-    if (url.pathname === "/admin" || url.pathname === "/admin/") return send(res, 200, fs.readFileSync(path.join(__dirname, "admin.html")), TYPES[".html"]);
+    if (url.pathname === "/admin" || url.pathname === "/admin/") res.adminPage = true;
+    if (res.adminPage) return send(res, 200, fs.readFileSync(path.join(__dirname, "admin.html")), TYPES[".html"]);
     if (url.pathname === "/products.js") {
       const st = readSettings(), json = (v) => JSON.stringify(v).replace(/</g, "\\u003c");
       const js = fs.readFileSync(path.join(PUBLIC, "products.js"), "utf8") + "\n// --- серверээс: products.json (админаас удирдана) ---\nwindow.PRODUCTS = " + json(publicProducts()) + ";\n" +

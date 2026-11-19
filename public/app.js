@@ -310,7 +310,8 @@
     $("payNo").textContent = "#" + j.orderNo;
     $("payTotal").textContent = money(j.total);
     $("payQr").src = j.payment.qrImage;
-    $("payDemoNote").hidden = $("payDemoBtn").hidden = !j.payment.demo;
+    $("payDemoNote").hidden = !j.payment.demo;
+    $("payDemoBtn").hidden = !j.payment.demoPay;
     $("payWaiting").hidden = false; $("payExpired").hidden = true;
     var links = $("payLinks");
     links.textContent = "";
