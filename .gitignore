@@ -6,4 +6,5 @@ node_modules/
 orders.json
 stock.json
 products.json
+settings.json
 public/images/products/

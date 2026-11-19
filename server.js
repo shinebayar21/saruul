@@ -1,6 +1,6 @@
 // EVA Clear Mongolia — жижиг дэлгүүрийн сервер
 // Ажиллуулах:  node server.js   →  http://localhost:4321
-// Захиалгууд orders.json, бараа products.json, үлдэгдлийн баримтууд stock.json файлд хадгалагдана.
+// Захиалгууд orders.json, бараа products.json, үлдэгдлийн баримтууд stock.json, холбоо барих/сошиал settings.json файлд хадгалагдана.
 // Удирдлагын самбар: http://localhost:4321/admin  (нууц түлхүүр: ADMIN_KEY орчны хувьсагч, анхдагч нь "change-me")
 // SITE_URL (жишээ нь https://evaclear.mn) өгвөл Facebook-т хуваалцах линкүүд түүгээр үүснэ.
 const http = require("http");
@@ -17,6 +17,7 @@ const PUBLIC = path.join(__dirname, "public");
 const ORDERS = path.join(__dirname, "orders.json");
 const PRODUCTS = path.join(__dirname, "products.json");
 const STOCK = path.join(__dirname, "stock.json");
+const SETTINGS = path.join(__dirname, "settings.json");
 const UPLOADS = path.join(PUBLIC, "images", "products");
 const TYPES = {
   ".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8", ".js": "text/javascript; charset=utf-8",
@@ -442,10 +443,91 @@ async function adminVoidDoc(req, res) {
   send(res, 200, { ok: true });
 }
 
-const ADMIN_GET = { "/api/admin/orders": adminOrders, "/api/admin/products": adminProducts, "/api/admin/stock": adminStock };
+// ---------- тохиргоо: холбоо барих, сошиал хаяг (settings.json, админаас удирдана) ----------
+// Хоосон талбар дэлгүүрт харагдахгүй. Файл байхгүй бол public/products.js-ийн SHOP-оос анхдагч авна.
+const CONTACT = { phone: "Утас", phone2: "Нэмэлт утас", email: "И-мэйл", address: "Хаяг", hours: "Ажлын цаг", messenger: "Messenger" };
+const SOCIAL = { facebook: "Facebook", instagram: "Instagram", telegram: "Telegram", discord: "Discord", whatsapp: "WhatsApp", wechat: "WeChat" };
+// "@нэр" эсвэл зөвхөн нэр бичвэл урд нь нэмэх хаяг
+const HANDLE = { facebook: "https://facebook.com/", instagram: "https://instagram.com/", telegram: "https://t.me/", discord: "https://discord.gg/", messenger: "https://m.me/" };
+const EXAMPLE = { facebook: "facebook.com/таны-хуудас", instagram: "@нэр", telegram: "@нэр эсвэл t.me/нэр", discord: "discord.gg/код", whatsapp: "8811 2233", wechat: "WeChat ID эсвэл https://… холбоос", messenger: "m.me/таны-хуудас" };
+const fieldErr = (field, label, msg) => Object.assign(new Error(`«${label}»: ${msg}`), { field, user: true });
+
+function phoneVal(v, field) {
+  v = clean(v, 40).replace(/\s+/g, " ");
+  if (!v) return "";
+  if (/[^\d\s+\-()]/.test(v)) throw fieldErr(field, CONTACT[field], "зөвхөн тоо, +, -, зай бичнэ");
+  const d = v.replace(/\D/g, "");
+  if (/^0*$/.test(d)) return ""; // "0000-0000" гэх мэт жишээ дугаар
+  if (d.length < 4 || d.length > 15) throw fieldErr(field, CONTACT[field], "дугаар буруу байна");
+  return v;
+}
+function emailVal(v) {
+  v = clean(v, 120);
+  if (v && !/^[^\s@<>"'()]+@[^\s@<>"'()]+\.[^\s@<>"'()]+$/.test(v)) throw fieldErr("email", CONTACT.email, "хаяг буруу байна (жишээ нь info@evaclear.mn)");
+  return v;
+}
+// Холбоос: зөвхөн http(s). @нэр, утасны дугаар, https:// -гүй хаягийг зөв холбоос болгоно.
+function linkVal(v, net) {
+  const label = SOCIAL[net] || CONTACT[net];
+  v = clean(v, 300).replace(/\s+/g, "");
+  if (!v) return "";
+  if (/^[a-z][a-z0-9+.-]*:/i.test(v) && !/^https?:\/\//i.test(v)) throw fieldErr(net, label, "зөвхөн http:// эсвэл https:// холбоос оруулна");
+  if (!/^https?:\/\//i.test(v)) {
+    if (net === "whatsapp" && /^\+?[\d()-]{6,}$/.test(v)) { let d = v.replace(/\D/g, ""); if (d.length === 8) d = "976" + d; v = "https://wa.me/" + d; }
+    else if (net === "wechat" && /^@?[a-z0-9][\w-]{2,39}$/i.test(v)) return v.replace(/^@/, ""); // WeChat ID (нийтийн профайл холбоос байдаггүй)
+    else if (/\//.test(v) || /^www\./i.test(v) || /^[\w-]+(\.[\w-]+)*\.(com|me|gg|mn|net|org|io|app|co|ru|cn)$/i.test(v)) v = "https://" + v;
+    else if (HANDLE[net] && /^@?[\w.-]{1,100}$/.test(v)) v = HANDLE[net] + v.replace(/^@/, "");
+    else throw fieldErr(net, label, "буруу байна — жишээ нь " + EXAMPLE[net]);
+  }
+  v = v.replace(/^https?/i, (m) => m.toLowerCase());
+  let u = null;
+  try { u = new URL(v); } catch {}
+  if (!u || !/^https?:$/.test(u.protocol) || !u.hostname.includes(".") || !/^https?:\/\/[^\s"'<>\\`]+$/.test(v) || v.length > 300) throw fieldErr(net, label, "холбоос буруу байна — жишээ нь " + EXAMPLE[net]);
+  return v;
+}
+const quiet = (fn) => { try { return fn(); } catch { return ""; } };
+
+function readSettings() {
+  const shop = loadShopFile().SHOP || {}, saved = readData(SETTINGS, null);
+  const def = { phone: quiet(() => phoneVal(shop.phone, "phone")), phone2: "", email: "", address: "", hours: "", messenger: quiet(() => linkVal(shop.messenger, "messenger")), social: {} };
+  for (const k in SOCIAL) def.social[k] = k === "facebook" ? quiet(() => linkVal(shop.facebook, "facebook")) : "";
+  if (!saved) return def;
+  const s = {}, ss = saved.social || {};
+  for (const k in CONTACT) s[k] = typeof saved[k] === "string" ? saved[k] : def[k];
+  s.social = {};
+  for (const k in SOCIAL) s.social[k] = typeof ss[k] === "string" ? ss[k] : def.social[k];
+  return s;
+}
+// Ирсэн талбаруудыг шалгаж, хэвшүүлнэ (ирээгүй талбар хэвээр үлдэнэ)
+function settingsFields(b, cur) {
+  const s = { ...cur, social: { ...cur.social } }, bs = b.social && typeof b.social === "object" ? b.social : {};
+  if ("phone" in b) s.phone = phoneVal(b.phone, "phone");
+  if ("phone2" in b) s.phone2 = phoneVal(b.phone2, "phone2");
+  if ("email" in b) s.email = emailVal(b.email);
+  if ("address" in b) s.address = clean(b.address, 300);
+  if ("hours" in b) s.hours = clean(b.hours, 200);
+  if ("messenger" in b) s.messenger = linkVal(b.messenger, "messenger");
+  for (const k in SOCIAL) if (k in bs) s.social[k] = linkVal(bs[k], k);
+  return s;
+}
+
+function adminSettings(req, res) {
+  send(res, 200, { settings: readSettings(), saved: fs.existsSync(SETTINGS) });
+}
+async function adminSaveSettings(req, res) {
+  const b = await readJson(req);
+  if (!b || typeof b !== "object") return send(res, 400, { error: "Буруу хүсэлт" });
+  let s;
+  try { s = settingsFields(b, readSettings()); } catch (e) { if (e.user) return send(res, 400, { error: e.message, field: e.field }); throw e; }
+  writeData(SETTINGS, s);
+  send(res, 200, { ok: true, settings: s });
+}
+
+const ADMIN_GET = { "/api/admin/orders": adminOrders, "/api/admin/products": adminProducts, "/api/admin/stock": adminStock, "/api/admin/settings": adminSettings };
 const ADMIN_POST = {
   "/api/admin/order": adminUpdate, "/api/admin/product": adminSaveProduct, "/api/admin/product/delete": adminDeleteProduct,
   "/api/admin/upload": adminUpload, "/api/admin/stock": adminStockDoc, "/api/admin/stock/void": adminVoidDoc,
+  "/api/admin/settings": adminSaveSettings,
 };
 
 seedProducts();
@@ -466,7 +548,9 @@ http.createServer((req, res) => {
     if (ADMIN_GET[url.pathname]) return admin(ADMIN_GET[url.pathname]);
     if (url.pathname === "/admin" || url.pathname === "/admin/") return send(res, 200, fs.readFileSync(path.join(__dirname, "admin.html")), TYPES[".html"]);
     if (url.pathname === "/products.js") {
-      const js = fs.readFileSync(path.join(PUBLIC, "products.js"), "utf8") + "\n// --- серверээс: products.json (админаас удирдана) ---\nwindow.PRODUCTS = " + JSON.stringify(publicProducts()).replace(/</g, "\\u003c") + ";\n";
+      const st = readSettings(), json = (v) => JSON.stringify(v).replace(/</g, "\\u003c");
+      const js = fs.readFileSync(path.join(PUBLIC, "products.js"), "utf8") + "\n// --- серверээс: products.json (админаас удирдана) ---\nwindow.PRODUCTS = " + json(publicProducts()) + ";\n" +
+        "// --- серверээс: settings.json (холбоо барих, сошиал; админ → Тохиргоо) ---\n(function (s) { for (var k in s) window.SHOP[k] = s[k]; })(" + json({ ...st, facebook: st.social.facebook }) + ");\n";
       return send(res, 200, js, TYPES[".js"]);
     }
     const pm = /^\/p\/([^/]+)\/?$/.exec(url.pathname);
