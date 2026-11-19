@@ -13,8 +13,8 @@ window.SHOP = {
     "Бид бүтээгдэхүүнээ албан ёсоор импортлон оруулж ирдэг. Жинхэнэ, баталгаатай барааг Улаанбаатар хот дотор үнэгүй хүргэлттэйгээр захиалаарай.",
   phone: "0000-0000", // ← утасны дугаараа бичнэ
   city: "Улаанбаатар",
-  facebook: "https://www.facebook.com/profile.php?id=61591166125026",
-  messenger: "https://m.me/61591166125026",
+  facebook: "https://www.facebook.com/profile.php?id=100042677186007",
+  messenger: "https://m.me/100042677186007",
   deliveryFee: 0, // хүргэлтийн төлбөр (₮). Үнэгүй бол 0
   freeDeliveryFrom: 0, // энэ дүнгээс дээш бол хүргэлт үнэгүй. Хэрэггүй бол 0
   benefits: [
