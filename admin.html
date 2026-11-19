@@ -99,6 +99,17 @@ td input.note { border:1px solid var(--line); border-radius:8px; padding:5px 8px
 .prod { display:flex; gap:12px; align-items:center; }
 .small { font-size:.8rem; }
 .printonly { display:none; }
+.kpi { min-width:0; } .kpi b { overflow-wrap:anywhere; }
+.tools input[type=time] { flex:none; min-width:0; }
+.tools input[type=checkbox] { flex:none; min-width:0; margin:0; }
+.tools label.chk { display:flex; align-items:center; gap:6px; white-space:nowrap; cursor:pointer; }
+.banner { background:var(--info-bg); color:var(--info); border:1px solid #b9cdf0; border-left:5px solid var(--info); border-radius:10px; padding:10px 14px; margin-bottom:14px; font-weight:600; display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+.banner span { flex:1; min-width:200px; }
+.tools .dates { display:inline-flex; align-items:center; gap:8px; }
+#salesTable td:first-child, #prodRepTable td:last-child { white-space:nowrap; }
+#prodRepTable th { white-space:normal; vertical-align:bottom; }
+th.sort { cursor:pointer; user-select:none; } th.sort:hover, th.sorted { color:var(--ink); }
+.pos { color:var(--good); } .neg { color:var(--bad); }
 
 /* ---- modal / form ---- */
 .modal { position:fixed; inset:0; background:rgba(16,29,54,.55); z-index:9; display:grid; place-items:center; padding:16px; }
@@ -161,9 +172,13 @@ input.bad, textarea.bad { border-color:var(--bad) !important; outline-color:var(
   .burger { display:block; }
   .top { padding:12px 16px; } .content { padding:16px 16px 40px; }
   .form { grid-template-columns:1fr; }
+  .kpi { padding:12px 14px; } .kpi b { font-size:1.3rem; }
+  .chart.wide { min-width:560px; } .chart.wide svg { height:auto; } /* тайлангийн график: жижиг дэлгэцэнд хажуу тийш гүйлгэнэ */
 }
 @media print {
   .side, .top .seg, .burger, .btn, .tools, .notice, .modal, .noprint { display:none !important; }
+  .scroll { overflow:visible !important; } .chart svg { height:200px; } table { font-size:.82rem; } th, td { padding:5px 6px; }
+  .banner { border:1px solid #000; color:#000; background:#fff; }
   .printonly { display:inline !important; }
   .app { display:block; } .top { position:static; border:0; } body { background:#fff; } .panel { border:0; padding:0; }
   body.print-doc .app, body.print-doc .login { display:none !important; }
@@ -199,7 +214,8 @@ input.bad, textarea.bad { border-color:var(--bad) !important; outline-color:var(
       <a href="#products" data-page="products"><svg viewBox="0 0 24 24"><path d="m21 8-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg>Бараа</a>
       <a href="#stock" data-page="stock"><svg viewBox="0 0 24 24"><path d="M3 21V8l9-5 9 5v13"/><path d="M7 21v-8h10v8"/><path d="M7 17h10"/></svg>Үлдэгдэл<span class="count bad" id="lowCount" hidden></span></a>
       <div class="menu-label">Тайлан</div>
-      <a href="#report" data-page="report"><svg viewBox="0 0 24 24"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg>Өдрийн тайлан</a>
+      <a href="#sales" data-page="sales"><svg viewBox="0 0 24 24"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg>Борлуулалтын тайлан</a>
+      <a href="#prodrep" data-page="prodrep"><svg viewBox="0 0 24 24"><path d="M9 3h6l1 3H8z"/><path d="M5 6h14v15H5z"/><path d="M9 11h6"/><path d="M9 15h6"/></svg>Барааны тайлан</a>
       <div class="menu-label">Сайт</div>
       <a href="#settings" data-page="settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Тохиргоо</a>
     </nav>
@@ -289,10 +305,16 @@ input.bad, textarea.bad { border-color:var(--bad) !important; outline-color:var(
         <div class="tools"><div class="seg" id="sTabs"></div></div>
         <div id="st-bal">
           <div class="tools">
+            <span class="muted">Огноо, цаг:</span><input id="balDate" type="date" title="Энэ мөчийн үлдэгдлийг харах"><input id="balTime" type="time" title="Цаг, минут">
+            <button class="btn" id="balNow" type="button" title="Одоогийн үлдэгдэл рүү буцах">Одоо</button>
+          </div>
+          <div class="tools">
             <input id="bq" type="search" placeholder="Бараа хайх">
             <select id="bF"><option value="">Бүгд</option><option value="low">Цөөн үлдсэн</option><option value="out">Дууссан</option></select>
             <button class="btn" id="csvBal" type="button">⬇ Excel (CSV)</button>
+            <button class="btn" id="printBal" type="button">🖨 Хэвлэх</button>
           </div>
+          <div class="banner" id="balBanner" hidden></div>
           <div class="panel"><div class="scroll"><table id="balTable"></table></div></div>
         </div>
         <div id="st-docs" hidden>
@@ -310,15 +332,41 @@ input.bad, textarea.bad { border-color:var(--bad) !important; outline-color:var(
         </div>
       </section>
 
-      <!-- Өдрийн тайлан -->
-      <section class="page" id="page-report" hidden>
+      <!-- Тайлангийн хугацаа: хоёр тайлан нэг хугацаатай; идэвхтэй тайлангийн хуудас руу зөөгдөнө -->
+      <div class="tools" id="perBar" hidden>
+        <div class="seg" id="perSeg"></div>
+        <span class="muted">Хугацаа:</span><span class="dates"><input id="perFrom" type="date" title="Эхлэх огноо"><span class="muted">—</span><input id="perTo" type="date" title="Дуусах огноо"></span>
+      </div>
+
+      <!-- Борлуулалтын тайлан -->
+      <section class="page" id="page-sales" hidden>
+        <div class="tools">
+          <div class="seg" id="grpSeg"></div>
+          <button class="btn" id="csvSales" type="button">⬇ Excel (CSV)</button>
+          <button class="btn" id="printSales" type="button">🖨 Хэвлэх</button>
+        </div>
+        <div class="kpis" id="sKpis"></div>
+        <div class="panel stack">
+          <div class="panel-head"><h2 id="sChartTitle">Орлого (төлөгдсөн)</h2></div>
+          <div class="scroll"><div class="chart wide" id="sChart"></div></div>
+        </div>
+        <div class="panel stack">
+          <div class="panel-head"><h2 id="sTableTitle">Борлуулалт</h2></div>
+          <div class="scroll"><table id="salesTable"></table></div>
+        </div>
+      </section>
+
+      <!-- Барааны тайлан -->
+      <section class="page" id="page-prodrep" hidden>
+        <div class="tools">
+          <input id="prq" type="search" placeholder="Бараа хайх">
+          <label class="chk"><input id="prIdle" type="checkbox"> Хөдөлгөөнгүй барааг нуух</label>
+          <button class="btn" id="csvProdRep" type="button">⬇ Excel (CSV)</button>
+          <button class="btn" id="printProdRep" type="button">🖨 Хэвлэх</button>
+        </div>
         <div class="panel">
-          <div class="panel-head">
-            <h2>Өдрийн тайлан</h2>
-            <button class="btn" id="csvDaily" type="button">⬇ Excel (CSV)</button>
-            <button class="btn" id="printBtn" type="button">🖨 Хэвлэх</button>
-          </div>
-          <div class="scroll"><table id="dailyTable"></table></div>
+          <div class="panel-head"><h2>Бараа тус бүрээр</h2><span class="muted" id="prNote"></span></div>
+          <div class="scroll"><table id="prodRepTable"></table></div>
         </div>
       </section>
 
@@ -360,14 +408,17 @@ input.bad, textarea.bad { border-color:var(--bad) !important; outline-color:var(
   "use strict";
   var $ = function (id) { return document.getElementById(id); };
   var FUL = { new: ["Шинэ", "info"], confirmed: ["Баталгаажсан", "info"], shipped: ["Хүргэлтэд гарсан", "warn"], delivered: ["Хүргэгдсэн", "good"], cancelled: ["Цуцалсан", "bad"] };
-  var PAGES = { dashboard: "Хянах самбар", orders: "Захиалгууд", delivery: "Хүргэлт", products: "Бараа", stock: "Үлдэгдэл", report: "Өдрийн тайлан", settings: "Тохиргоо" };
-  var RANGED = { dashboard: 1, products: 1, report: 1 };
+  var PAGES = { dashboard: "Хянах самбар", orders: "Захиалгууд", delivery: "Хүргэлт", products: "Бараа", stock: "Үлдэгдэл", sales: "Борлуулалтын тайлан", prodrep: "Барааны тайлан", settings: "Тохиргоо" };
+  var RANGED = { dashboard: 1, products: 1 }; // толгойн хугацааны товчтой хуудсууд
+  var REPORT = { sales: 1, prodrep: 1 };     // хугацааны дэлгэрэнгүй мөртэй (#perBar) хуудсууд
   // төрөл: [нэр, өнгө, тэмдэг]
   var DTYPE = { "in": ["Орлого", "good", 1], "out": ["Зарлага", "info", -1], "act": ["АКТ", "bad", -1], "sale": ["Борлуулалт", "warn", -1], "return": ["Буцаалт", "mute", 1] };
   var REASONS = ["гэмтсэн", "хугацаа дууссан", "дутагдал", "бусад"];
   var LOW = 5; // ийм буюу түүнээс цөөн бол "Цөөн үлдсэн"
-  var key = "", orders = [], products = [], docs = [], levels = {}, days = 7, timer, lastDaily = [], lastProd = {}, updatedAt = "";
+  var key = "", orders = [], products = [], docs = [], levels = {}, timer, lastProd = {}, updatedAt = "";
   var dTab = "ready", sTab = "bal", lastBal = [], lastHist = [];
+  // Нэг хугацаа бүх хуудсанд: p = "1" | "7" | "30" | "month" | "prev" | "0" (бүгд) | "custom" (from–to)
+  var per = { p: "7", from: "", to: "" }, grp = "day", balAt = null, lastSales = null, lastPR = [], prSort = { k: "rev", d: -1 };
   try { key = sessionStorage.getItem("eva_admin") || ""; } catch (e) {}
 
   function h(tag, props, kids) {
@@ -424,37 +475,94 @@ input.bad, textarea.bad { border-color:var(--bad) !important; outline-color:var(
   }
 
   // ---------- цэс / хуудас ----------
-  function currentPage() { var p = location.hash.slice(1); return PAGES[p] ? p : "dashboard"; }
+  function currentPage() { var p = location.hash.slice(1); if (p === "report") return "sales"; return PAGES[p] ? p : "dashboard"; } // хуучин #report холбоос
   function route() {
     var p = currentPage();
     Object.keys(PAGES).forEach(function (k) { $("page-" + k).hidden = k !== p; });
     [].forEach.call($("menu").querySelectorAll("a"), function (a) { a.classList.toggle("on", a.dataset.page === p); });
     $("pageTitle").textContent = PAGES[p];
     $("range").style.display = RANGED[p] ? "" : "none";
+    $("perBar").hidden = !REPORT[p];
+    if (REPORT[p]) $("page-" + p).insertBefore($("perBar"), $("page-" + p).firstChild);
     $("side").classList.remove("open");
     setSub();
-    if (p === "dashboard" && orders.length) draw(); // график харагдах үедээ зөв хэмжээгээр зурагдана
+    if ((p === "dashboard" || p === "sales") && orders.length) draw(); // график харагдах үедээ зөв хэмжээгээр зурагдана
     if (p === "settings" && key && !setLoaded) loadSettings();
   }
-  function setSub(extra) { $("pageSub").textContent = extra || updatedAt; }
+  function setSub(extra) {
+    var p = currentPage(), showPer = REPORT[p] || (RANGED[p] && !HEAD_P[per.p]);
+    $("pageSub").textContent = extra || (showPer ? perLabel() + " · " + updatedAt : updatedAt);
+  }
   window.addEventListener("hashchange", route);
   $("burger").onclick = function () { $("side").classList.toggle("open"); };
   document.addEventListener("click", function (e) { if ($("side").classList.contains("open") && !$("side").contains(e.target) && e.target !== $("burger")) $("side").classList.remove("open"); });
 
   // ---------- тооцоолол ----------
-  function rangeDays() {
-    var list = [], today = new Date(); today.setHours(0, 0, 0, 0);
-    var n = days;
-    if (!n) {
-      var first = orders.length ? new Date(orders[0].time) : today; first.setHours(0, 0, 0, 0);
-      n = Math.min(Math.round((today - first) / 864e5) + 1, 366);
-    }
-    for (var i = n - 1; i >= 0; i--) { var d = new Date(today); d.setDate(d.getDate() - i); list.push(dayKey(d)); }
+  // ---------- хугацаа (бүх хуудсанд нэг) ----------
+  var PRESETS = [["1", "Өнөөдөр"], ["7", "7 хоног"], ["30", "30 хоног"], ["month", "Энэ сар"], ["prev", "Өнгөрсөн сар"], ["0", "Бүгд"]];
+  var HEAD_P = { "1": 1, "7": 1, "30": 1, "0": 1 }; // толгойн товчнуудад байдаг нь
+  var parseDay = function (s) { var a = s.split("-"); return new Date(+a[0], a[1] - 1, +a[2]); }; // орон нутгийн 00:00
+  var addDays = function (s, n) { var d = parseDay(s); d.setDate(d.getDate() + n); return dayKey(d); };
+  var BACKDATE = { "in": 1, "out": 1, "act": 1 };
+  // Баримт үлдэгдэлд хэзээнээс нөлөөлөх вэ: createdAt; гараар өөр огноо сонгосон орлого/зарлага/АКТ бол тэр өдрийн 00:00
+  var backdated = function (d) { return !!(BACKDATE[d.type] && d.date && (!d.createdAt || d.date !== dayKey(d.createdAt))); };
+  var effTime = function (d) { return backdated(d) || !d.createdAt ? parseDay(d.date).getTime() : new Date(d.createdAt).getTime(); };
+  // t мөч хүртэлх (t-г оруулаад) үлдэгдэл; хүчингүй баримт хэзээ ч тооцогдохгүй
+  function levelsAt(t) {
+    var m = {};
+    docs.forEach(function (d) { if (!d.voided && effTime(d) <= t) d.items.forEach(function (it) { m[it.id] = (m[it.id] || 0) + DTYPE[d.type][2] * it.qty; }); });
+    return m;
+  }
+  function firstDay() {
+    var t = Date.now();
+    orders.forEach(function (o) { t = Math.min(t, new Date(o.time).getTime()); });
+    docs.forEach(function (d) { if (!d.voided) t = Math.min(t, effTime(d)); });
+    return dayKey(t);
+  }
+  function perRange() {
+    var n = new Date(), t = dayKey(n), p = per.p;
+    if (p === "custom" && per.from && per.to) return per.from <= per.to ? { from: per.from, to: per.to } : { from: per.to, to: per.from };
+    if (p === "month") return { from: t.slice(0, 8) + "01", to: t };
+    if (p === "prev") return { from: dayKey(new Date(n.getFullYear(), n.getMonth() - 1, 1)), to: dayKey(new Date(n.getFullYear(), n.getMonth(), 0)) };
+    if (p === "0") return { from: firstDay(), to: t };
+    return { from: addDays(t, 1 - (Number(p) || 7)), to: t };
+  }
+  function perLabel() {
+    var r = perRange(), name = PRESETS.filter(function (x) { return x[0] === per.p; })[0];
+    return (name ? name[1] + ": " : "") + (r.from === r.to ? r.from : r.from + " — " + r.to);
+  }
+  // Хугацааны өдрүүд; cap өгвөл сүүлийн cap өдөр (самбарын график)
+  function rangeDays(cap) {
+    var r = perRange(), list = [], k = r.from;
+    if (cap && k < addDays(r.to, 1 - cap)) k = addDays(r.to, 1 - cap);
+    for (; k <= r.to; k = addDays(k, 1)) list.push(k);
     return list;
   }
+  function setPer(p, from, to) {
+    per = { p: p, from: from || "", to: to || "" };
+    draw();
+  }
+  function drawPer() {
+    var seg = $("perSeg"), r = perRange();
+    seg.textContent = "";
+    PRESETS.forEach(function (x) {
+      var b = h("button", { type: "button", className: x[0] === per.p ? "on" : "", text: x[1] });
+      b.onclick = function () { setPer(x[0]); };
+      seg.appendChild(b);
+    });
+    [].forEach.call($("range").children, function (b) { b.classList.toggle("on", b.dataset.d === per.p); });
+    if (document.activeElement !== $("perFrom")) $("perFrom").value = r.from;
+    if (document.activeElement !== $("perTo")) $("perTo").value = r.to;
+  }
+  ["perFrom", "perTo"].forEach(function (id) {
+    $(id).addEventListener("change", function () {
+      var f = $("perFrom").value, t = $("perTo").value;
+      if (f && t) setPer("custom", f, t);
+    });
+  });
 
   function draw() {
-    var keys = rangeDays(), byDay = {}, prod = {};
+    var keys = rangeDays(366), byDay = {}, prod = {};
     keys.forEach(function (k) { byDay[k] = { day: k, orders: 0, paid: 0, unpaid: 0, cancelled: 0, qty: 0, revenue: 0 }; });
     orders.forEach(function (o) {
       var d = byDay[dayKey(o.time)];
@@ -472,7 +580,8 @@ input.bad, textarea.bad { border-color:var(--bad) !important; outline-color:var(
     var fresh = orders.filter(function (o) { return o.fulfil === "new"; }).length;
     var ready = orders.filter(function (o) { return inTab(o, "ready"); }).length;
     var low = products.filter(function (p) { return p.active && stockOf(p.id) <= LOW; }).length;
-    lastDaily = rows; lastProd = prod;
+    lastProd = prod;
+    drawPer();
 
     $("menuCount").hidden = !fresh; $("menuCount").textContent = fresh;
     $("shipCount").hidden = !ready; $("shipCount").textContent = ready;
@@ -486,7 +595,7 @@ input.bad, textarea.bad { border-color:var(--bad) !important; outline-color:var(
      ["Хүргэх ёстой", toShip, "төлөгдсөн, хүргээгүй (нийт)"]]
       .forEach(function (c) { k.appendChild(h("div", { className: "kpi" }, [h("span", { text: c[0] }), h("b", { text: String(c[1]) }), h("small", { text: c[2] })])); });
 
-    drawChart(rows);
+    drawChart($("chart"), rows);
     var top = Object.keys(prod).map(function (n) { return prod[n]; }).sort(function (a, b) { return b.revenue - a.revenue; });
     if (top.length) table($("topTable"), ["Бараа", N("Тоо"), N("Орлого")], top.slice(0, 6).map(function (p) { return [p.name, N(p.qty), N(money(p.revenue))]; }));
     else empty($("topTable"), "Мэдээлэл алга");
@@ -495,12 +604,13 @@ input.bad, textarea.bad { border-color:var(--bad) !important; outline-color:var(
     drawDelivery();
     drawProducts();
     drawStock();
-    drawDaily(rows, tot);
+    drawSales();
+    drawProdRep();
   }
 
-  // ---------- график: нэг цуврал, өдрийн орлого ----------
-  function drawChart(rows) {
-    var box = $("chart"); box.textContent = "";
+  // ---------- график: нэг цуврал, хугацааны (өдөр/7 хоног/сар) орлого ----------
+  function drawChart(box, rows) {
+    box.textContent = "";
     var NS = "http://www.w3.org/2000/svg", W = 800, H = 250, L = 58, R = 8, T = 12, B = 26;
     var max = Math.max.apply(null, rows.map(function (r) { return r.revenue; }));
     if (!max) { box.appendChild(h("p", { className: "empty", text: "Энэ хугацаанд төлөгдсөн захиалга алга" })); return; }
@@ -508,7 +618,7 @@ input.bad, textarea.bad { border-color:var(--bad) !important; outline-color:var(
     var top = Math.ceil(max / step) * step;
     var svg = document.createElementNS(NS, "svg");
     svg.setAttribute("viewBox", "0 0 " + W + " " + H); svg.setAttribute("role", "img");
-    svg.setAttribute("aria-label", "Өдрийн орлогын багана график. Тоон мэдээллийг «Өдрийн тайлан» цэснээс харна уу.");
+    svg.setAttribute("aria-label", "Орлогын багана график. Тоон мэдээллийг «Борлуулалтын тайлан» цэснээс харна уу.");
     var s = function (tag, a) { var e = document.createElementNS(NS, tag); for (var k in a) e.setAttribute(k, a[k]); svg.appendChild(e); return e; };
     var y = function (v) { return T + (H - T - B) * (1 - v / top); };
     for (var g = 0; g <= top + 1e-9; g += step) {
@@ -520,11 +630,11 @@ input.bad, textarea.bad { border-color:var(--bad) !important; outline-color:var(
     rows.forEach(function (r, i) {
       var x = L + slot * i + (slot - bw) / 2, yy = y(r.revenue), bh = H - B - yy, rad = Math.min(4, bw / 2, bh);
       var bar = r.revenue ? s("path", { d: "M" + x + "," + (H - B) + "V" + (yy + rad) + "Q" + x + "," + yy + " " + (x + rad) + "," + yy + "H" + (x + bw - rad) + "Q" + (x + bw) + "," + yy + " " + (x + bw) + "," + (yy + rad) + "V" + (H - B) + "Z", fill: "#16294a" }) : null;
-      if (i % every === 0) s("text", { x: x + bw / 2, y: H - 8, "text-anchor": "middle", "font-size": 11, fill: "#6b748a" }).textContent = r.day.slice(5).replace("-", "/");
+      if (i % every === 0) s("text", { x: x + bw / 2, y: H - 8, "text-anchor": "middle", "font-size": 11, fill: "#6b748a" }).textContent = r.tick || r.day.slice(5).replace("-", "/");
       var hit = s("rect", { x: L + slot * i, y: T, width: slot, height: H - T - B, fill: "transparent" });
       hit.addEventListener("mouseenter", function () {
         if (bar) bar.setAttribute("fill", "#2f4a7a");
-        tip.textContent = r.day + " · " + money(r.revenue) + " · " + r.paid + " захиалга";
+        tip.textContent = (r.label || r.day) + " · " + money(r.revenue) + " · " + r.paid + " захиалга";
         tip.style.left = Math.min(Math.max((x + bw / 2) / W * 100, 14), 86) + "%"; tip.style.top = (yy / H * 100) + "%"; tip.hidden = false;
       });
       hit.addEventListener("mouseleave", function () { if (bar) bar.setAttribute("fill", "#16294a"); tip.hidden = true; });
@@ -579,13 +689,162 @@ input.bad, textarea.bad { border-color:var(--bad) !important; outline-color:var(
     }));
   }
 
-  function drawDaily(rows, tot) {
-    var shown = rows.slice().reverse().filter(function (r) { return r.orders || rows.length <= 31; });
-    table($("dailyTable"),
-      ["Өдөр", N("Захиалга"), N("Төлөгдсөн"), N("Төлөгдөөгүй"), N("Цуцалсан"), N("Зарагдсан (ш)"), N("Орлого")],
-      shown.map(function (r) { return [r.day, N(r.orders), N(r.paid), N(r.unpaid), N(r.cancelled), N(r.qty), N(money(r.revenue))]; }),
-      ["Нийт", N(tot.orders), N(tot.paid), N(tot.unpaid), N(tot.cancelled), N(tot.qty), N(money(tot.revenue))]);
+  // ---------- борлуулалтын тайлан ----------
+  var GROUPS = [["day", "Өдрөөр"], ["week", "7 хоногоор"], ["month", "Сараар"]];
+  var grpName = function () { return GROUPS.filter(function (g) { return g[0] === grp; })[0][1]; };
+  function grpKey(day) {
+    if (grp === "month") return day.slice(0, 7);
+    if (grp === "week") { var d = parseDay(day); d.setDate(d.getDate() - (d.getDay() + 6) % 7); return dayKey(d); } // Даваа гараг
+    return day;
   }
+  // Захиалгыг үүссэн өдрөөр нь (o.time) бүлэглэнэ. Цуцалсан нь төлбөрөөс үл хамааран «цуцалсан».
+  function salesData() {
+    var r = perRange(), g = {}, rows = [];
+    var zero = function () { return { orders: 0, paid: 0, unpaid: 0, cancelled: 0, qty: 0, goods: 0, delivery: 0, revenue: 0 }; };
+    rangeDays().forEach(function (k) {
+      var gk = grpKey(k), x = g[gk];
+      if (!x) { x = g[gk] = zero(); x.key = gk; x.first = k; rows.push(x); }
+      x.last = k;
+    });
+    rows.forEach(function (x) {
+      x.label = grp === "month" ? x.key : grp === "week" ? (x.first === x.last ? x.first : x.first + " – " + x.last.slice(5)) : x.key;
+      x.tick = grp === "month" ? x.key : x.first.slice(5).replace("-", "/");
+    });
+    orders.forEach(function (o) {
+      var day = dayKey(o.time), x = day >= r.from && day <= r.to && g[grpKey(day)];
+      if (!x) return;
+      x.orders++;
+      if (o.fulfil === "cancelled") x.cancelled++;
+      else if (o.status === "paid") {
+        var goods = o.items.reduce(function (s, i) { return s + i.price * i.qty; }, 0);
+        x.paid++; x.qty += qtyOf(o); x.goods += goods; x.delivery += o.delivery || 0; x.revenue += o.total;
+      } else x.unpaid++;
+    });
+    var tot = rows.reduce(function (t, x) { for (var k in t) t[k] += x[k]; return t; }, zero());
+    return { range: r, rows: rows, tot: tot };
+  }
+  var SALES_HEAD = ["Захиалга", "Төлөгдсөн", "Төлөгдөөгүй", "Цуцалсан", "Зарагдсан (ш)", "Барааны орлого", "Хүргэлтийн төлбөр", "Нийт орлого"];
+  var salesCells = function (x) { return [x.orders, x.paid, x.unpaid, x.cancelled, x.qty, x.goods, x.delivery, x.revenue]; };
+  function drawSales() {
+    var s = salesData(), tot = s.tot, k = $("sKpis");
+    lastSales = s;
+    var seg = $("grpSeg"); seg.textContent = "";
+    GROUPS.forEach(function (x) {
+      var b = h("button", { type: "button", className: x[0] === grp ? "on" : "", text: x[1] });
+      b.onclick = function () { grp = x[0]; drawSales(); };
+      seg.appendChild(b);
+    });
+    k.textContent = "";
+    [["Орлого (төлөгдсөн)", money(tot.revenue), "бараа " + money(tot.goods) + " + хүргэлт"],
+     ["Төлөгдсөн захиалга", tot.paid, "нийт " + tot.orders + " захиалгаас"],
+     ["Зарагдсан бараа", tot.qty + " ш", "төлөгдсөн захиалгаар"],
+     ["Дундаж сагс", tot.paid ? money(tot.revenue / tot.paid) : "—", "төлөгдсөн захиалгаар"],
+     ["Хүргэлтийн төлбөр", money(tot.delivery), "төлөгдсөн захиалгаас"],
+     ["Төлөгдөөгүй", tot.unpaid, "цуцлаагүй, төлбөр хүлээж буй"],
+     ["Цуцалсан", tot.cancelled, "захиалга"],
+     ["Хугацаа", s.rows.length + " " + ({ day: "өдөр", week: "7 хоног", month: "сар" })[grp], s.range.from + " — " + s.range.to]]
+      .forEach(function (c) { k.appendChild(h("div", { className: "kpi" }, [h("span", { text: c[0] }), h("b", { text: String(c[1]) }), h("small", { text: c[2] })])); });
+    $("sChartTitle").textContent = "Орлого (төлөгдсөн) · " + grpName().toLowerCase();
+    drawChart($("sChart"), s.rows);
+    $("sTableTitle").textContent = "Борлуулалт · " + grpName().toLowerCase();
+    // Олон өдрийн тайланд хоосон өдрүүдийг харуулахгүй (CSV-д бүгд орно)
+    var shown = s.rows.slice().reverse().filter(function (x) { return x.orders || grp !== "day" || s.rows.length <= 31; });
+    var fmt = function (v, i) { return N(i >= 5 ? money(v) : v); };
+    table($("salesTable"), [{ day: "Өдөр", week: "7 хоног", month: "Сар" }[grp]].concat(SALES_HEAD.map(N)),
+      shown.map(function (x) { return [x.label].concat(salesCells(x).map(fmt)); }),
+      ["Нийт"].concat(salesCells(tot).map(fmt)));
+    if (currentPage() === "sales") setSub();
+  }
+  $("csvSales").onclick = function () {
+    var s = lastSales;
+    csv("borluulalt-" + s.range.from + "_" + s.range.to + "-" + grp + ".csv",
+      [[{ day: "Өдөр", week: "7 хоног", month: "Сар" }[grp]].concat(SALES_HEAD.map(function (x, i) { return i >= 5 ? x + " (₮)" : x; }))]
+        .concat(s.rows.map(function (x) { return [x.label].concat(salesCells(x)); }), [["Нийт"].concat(salesCells(s.tot))]));
+  };
+  $("printSales").onclick = function () { setSub(perLabel() + " · " + grpName() + " · хэвлэсэн " + stamp(new Date())); window.print(); };
+
+  // ---------- барааны тайлан ----------
+  // Эхний үлд. + Орсон − Зарагдсан − Зарлага − АКТ = Эцсийн үлд. (бүгд үлдэгдлийн бүртгэлээс, effTime-аар)
+  // Борлуулалтын дүн / хувь / захиалгын тоо — тоологдох (төлөгдсөн, цуцлаагүй) захиалгаас, o.time-аар
+  var PRCOLS = [["name", "Бараа", ""], ["open", "Эхний үлд.", "Хугацааны эхэнд байсан үлдэгдэл (ш)"], ["inq", "Орсон", "Орлого + буцаалт (ш)"],
+    ["sold", "Зарагдсан", "Борлуулалтаар хасагдсан (ш)"], ["out", "Зарлага", "Зарлагын баримтаар (ш)"], ["act", "АКТ", "АКТ-аар хассан (ш)"],
+    ["close", "Эцсийн үлд.", "Хугацааны төгсгөлд байсан үлдэгдэл (ш)"], ["rev", "Борлуулалтын дүн", "Төлөгдсөн захиалгын барааны дүн (хүргэлтгүй)"],
+    ["share", "Хувь", "Нийт борлуулалтын дүнд эзлэх хувь"], ["ords", "Захиалга", "Энэ барааг агуулсан төлөгдсөн захиалгын тоо"],
+    ["last", "Сүүлд зарагдсан", "Хугацааны төгсгөл хүртэлх сүүлийн борлуулалтын өдөр"]];
+  function prodRepData() {
+    var r = perRange(), t0 = parseDay(r.from).getTime(), t1 = parseDay(addDays(r.to, 1)).getTime(), m = {}, list = [], totRev = 0;
+    var row = function (id, name) {
+      if (!m[id]) { m[id] = { id: id, name: name, p: null, open: 0, inq: 0, sold: 0, out: 0, act: 0, close: 0, rev: 0, share: 0, ords: 0, last: "" }; list.push(m[id]); }
+      return m[id];
+    };
+    products.forEach(function (p) { row(p.id, p.name).p = p; });
+    docs.forEach(function (d) {
+      if (d.voided) return;
+      var t = effTime(d);
+      d.items.forEach(function (it) {
+        var x = row(it.id, it.name), q = DTYPE[d.type][2] * it.qty;
+        if (t >= t1) return;
+        x.close += q;
+        if (t < t0) x.open += q;
+        else if (q > 0) x.inq += it.qty;
+        else x[d.type === "sale" ? "sold" : d.type] += it.qty;
+      });
+    });
+    orders.forEach(function (o) {
+      if (!counted(o)) return;
+      var day = dayKey(o.time), seen = {};
+      if (day > r.to) return;
+      o.items.forEach(function (i) {
+        var x = row(i.id, i.name);
+        if (day > x.last) x.last = day;
+        if (day < r.from) return;
+        x.rev += i.price * i.qty; totRev += i.price * i.qty;
+        if (!seen[i.id]) { seen[i.id] = 1; x.ords++; }
+      });
+    });
+    list.forEach(function (x) { x.share = totRev ? x.rev / totRev * 100 : 0; x.idle = !(x.inq || x.sold || x.out || x.act || x.rev || x.ords); });
+    return { range: r, list: list, totRev: totRev };
+  }
+  var prStatus = function (x) { return !x.p ? "устгагдсан" : x.p.active ? "" : "нуусан"; };
+  var pct = function (v) { return v.toFixed(1) + "%"; };
+  function prTotals(list) {
+    var t = { open: 0, inq: 0, sold: 0, out: 0, act: 0, close: 0, rev: 0, share: 0, ords: 0, last: "" };
+    list.forEach(function (x) { for (var k in t) { if (k === "last") { if (x.last > t.last) t.last = x.last; } else t[k] += x[k]; } });
+    return t;
+  }
+  function drawProdRep() {
+    var s = prodRepData(), q = $("prq").value.trim().toLowerCase(), idle = $("prIdle").checked, k = prSort.k, d = prSort.d;
+    lastPR = s.list.filter(function (x) {
+      if (idle && x.idle) return false;
+      return !q || (x.name + " " + (x.p && x.p.category || "")).toLowerCase().indexOf(q) >= 0;
+    }).sort(function (a, b) {
+      var c = k === "name" ? a.name.localeCompare(b.name) : k === "last" ? (a.last < b.last ? -1 : a.last > b.last ? 1 : 0) : a[k] - b[k];
+      return c * d || a.name.localeCompare(b.name);
+    });
+    var gone = s.list.filter(function (x) { return !x.p; }).length;
+    $("prNote").textContent = lastPR.length + " / " + s.list.length + " бараа" + (gone ? " · " + gone + " устгагдсан бараа орсон" : "") + " · эхний + орсон − зарагдсан − зарлага − АКТ = эцсийн";
+    if (!lastPR.length) return empty($("prodRepTable"), "Бараа олдсонгүй");
+    var t = prTotals(lastPR);
+    var head = PRCOLS.map(function (c, i) { var txt = c[1] + (c[0] === k ? (d > 0 ? " ▲" : " ▼") : ""); return i ? N(txt) : txt; });
+    table($("prodRepTable"), head, lastPR.map(function (x) {
+      var st = prStatus(x);
+      var name = h("div", null, [h("b", { text: x.name }), x.p && x.p.category ? h("div", { className: "muted small", text: x.p.category }) : null,
+        st ? h("div", null, [pill(x.p ? "mute" : "bad", st === "устгагдсан" ? "Устгагдсан бараа" : "Нуусан")]) : null]);
+      return [name, N(x.open), N(x.inq), N(x.sold), N(x.out), N(x.act), N(x.close), N(money(x.rev)), N(pct(x.share)), N(x.ords), N(x.last || "—")];
+    }), ["Нийт (" + lastPR.length + ")", N(t.open), N(t.inq), N(t.sold), N(t.out), N(t.act), N(t.close), N(money(t.rev)), N(pct(t.share)), N(t.ords), N(t.last || "—")]);
+    [].forEach.call($("prodRepTable").tHead.rows[0].cells, function (th, i) {
+      var c = PRCOLS[i];
+      th.className += " sort" + (c[0] === k ? " sorted" : ""); th.title = (c[2] ? c[2] + ". " : "") + "Дарж эрэмбэлнэ";
+      th.onclick = function () { prSort = { k: c[0], d: c[0] === k ? -d : c[0] === "name" ? 1 : -1 }; drawProdRep(); };
+    });
+  }
+  $("prq").addEventListener("input", drawProdRep); $("prIdle").addEventListener("change", drawProdRep);
+  $("csvProdRep").onclick = function () {
+    var r = perRange(), t = prTotals(lastPR), row = function (x) { return [x.open, x.inq, x.sold, x.out, x.act, x.close, x.rev, x.share.toFixed(1), x.ords, x.last]; };
+    csv("baraany-tailan-" + r.from + "_" + r.to + ".csv", [["Бараа", "Төлөв"].concat(PRCOLS.slice(1).map(function (c) { return c[1] + (c[0] === "rev" ? " (₮)" : c[0] === "share" ? " (%)" : ""); }))]
+      .concat(lastPR.map(function (x) { return [x.name, prStatus(x) || "идэвхтэй"].concat(row(x)); }), [["Нийт", ""].concat(row(t))]));
+  };
+  $("printProdRep").onclick = function () { setSub(perLabel() + " · хэвлэсэн " + stamp(new Date())); window.print(); };
 
   // ---------- бараа ----------
   function cats() {
@@ -616,7 +875,7 @@ input.bad, textarea.bad { border-color:var(--bad) !important; outline-color:var(
       price: function (a, b) { return a.p.price - b.p.price; }, priceDesc: function (a, b) { return b.p.price - a.p.price; },
     };
     list.sort(by[sort] || by.rev);
-    $("pNote").textContent = products.length + " бараа · борлуулалт: " + ({ 1: "өнөөдөр", 7: "сүүлийн 7 хоног", 30: "сүүлийн 30 хоног", 0: "бүх хугацаа" })[days];
+    $("pNote").textContent = products.length + " бараа · борлуулалт: " + (({ 1: "өнөөдөр", 7: "сүүлийн 7 хоног", 30: "сүүлийн 30 хоног", 0: "бүх хугацаа" })[per.p] || perLabel());
     if (!list.length) return empty($("productsTable"), "Бараа олдсонгүй");
     table($("productsTable"), ["Бараа", "Ангилал", N("Үнэ"), N("Үлдэгдэл"), "Төлөв", N("Зарагдсан (ш)"), N("Орлого"), ""], list.map(function (x) {
       var p = x.p;
@@ -829,25 +1088,51 @@ input.bad, textarea.bad { border-color:var(--bad) !important; outline-color:var(
     if (sTab === "bal") drawBal(); else if (sTab === "hist") drawHist(); else drawDocs(sTab);
   }
 
+  // balAt: null = одоогийн (серверийн) үлдэгдэл; тоо = тэр мөчийн (сонгосон минутын төгсгөл хүртэлх) үлдэгдэл
+  var balWhen = function () { return stamp(balAt); };
   function drawBal() {
-    var q = $("bq").value.trim().toLowerCase(), f = $("bF").value, tq = 0, tv = 0;
-    lastBal = products.map(function (p) { return { p: p, n: stockOf(p.id) }; }).filter(function (x) {
+    var q = $("bq").value.trim().toLowerCase(), f = $("bF").value, tq = 0, tv = 0, tc = 0, past = balAt != null, lv = past ? levelsAt(balAt) : levels;
+    var a = document.activeElement;
+    if (!past && a !== $("balDate") && a !== $("balTime")) { var n = new Date(); $("balDate").value = dayKey(n); $("balTime").value = pad(n.getHours()) + ":" + pad(n.getMinutes()); }
+    $("balNow").disabled = !past;
+    var ban = $("balBanner"); ban.textContent = ""; ban.hidden = !past;
+    if (past) ban.appendChild(h("span", { text: "⏱ " + balWhen() + " үеийн үлдэгдэл харагдаж байна — энэ нь ОДООГИЙН үлдэгдэл биш." + (balAt > Date.now() ? " (Ирээдүйн мөч)" : "") }));
+    if (past) ban.appendChild(btn("Одоогийн үлдэгдэл рүү буцах", balReset));
+    lastBal = products.map(function (p) { return { p: p, n: lv[p.id] || 0, cur: stockOf(p.id) }; }).filter(function (x) {
       if (q && (x.p.name + " " + (x.p.category || "")).toLowerCase().indexOf(q) < 0) return false;
       if (f === "low") return x.n > 0 && x.n <= LOW;
       if (f === "out") return x.n <= 0;
       return true;
     }).sort(function (a, b) { return a.p.name.localeCompare(b.p.name); });
+    if (currentPage() === "stock" && sTab === "bal") setSub(past ? "Үлдэгдэл · " + balWhen() + " үеийн байдлаар" : "");
     if (!lastBal.length) return empty($("balTable"), "Бараа олдсонгүй");
-    table($("balTable"), ["Бараа", N("Зарах үнэ"), N("Үлдэгдэл (ш)"), "Төлөв", N("Үнийн дүн")], lastBal.map(function (x) {
-      var v = Math.max(0, x.n) * x.p.price; tq += x.n; tv += v;
-      return [prodCell(x.p, (x.p.category || "") + (x.p.active ? "" : " · нуусан")), N(money(x.p.price)), N(x.n), stockPill(x.n), N(v ? money(v) : "—")];
-    }), ["Нийт (" + lastBal.length + " бараа)", "", N(tq), "", N(money(tv))]);
+    var diff = function (x) { var d = x.cur - x.n; return h("span", { className: d > 0 ? "pos" : d < 0 ? "neg" : "muted", text: d > 0 ? "+" + d : d < 0 ? "−" + -d : "0" }); };
+    table($("balTable"), ["Бараа", N("Зарах үнэ"), N(past ? "Тэр үеийн үлд. (ш)" : "Үлдэгдэл (ш)"), "Төлөв"].concat(past ? [N("Одоо (ш)"), N("Түүнээс хойш")] : [], [N("Үнийн дүн")]), lastBal.map(function (x) {
+      var v = Math.max(0, x.n) * x.p.price; tq += x.n; tv += v; tc += x.cur;
+      return [prodCell(x.p, (x.p.category || "") + (x.p.active ? "" : " · нуусан")), N(money(x.p.price)), N(x.n), stockPill(x.n)]
+        .concat(past ? [N(x.cur), { node: diff(x), num: true }] : [], [N(v ? money(v) : "—")]);
+    }), ["Нийт (" + lastBal.length + " бараа)", "", N(tq), ""].concat(past ? [N(tc), { node: diff({ n: tq, cur: tc }), num: true }] : [], [N(money(tv))]));
   }
+  function balReset() { balAt = null; drawBal(); }
+  function balPick() {
+    var d = $("balDate").value, t = $("balTime").value || "23:59";
+    if (!d) return balReset();
+    var p = t.split(":"), at = parseDay(d);
+    at.setHours(+p[0], +p[1], 59, 999); // сонгосон минутын төгсгөл хүртэл
+    balAt = at.getTime();
+    drawBal();
+  }
+  $("balDate").addEventListener("change", balPick); $("balTime").addEventListener("change", balPick);
+  $("balNow").onclick = balReset;
   $("bq").addEventListener("input", drawBal); $("bF").addEventListener("input", drawBal);
   $("csvBal").onclick = function () {
-    csv("uldegdel-" + dayKey(new Date()) + ".csv", [["Бараа", "Ангилал", "Зарах үнэ (₮)", "Үлдэгдэл (ш)", "Төлөв", "Үнийн дүн (₮)"]]
-      .concat(lastBal.map(function (x) { return [x.p.name, x.p.category || "", x.p.price, x.n, x.n <= 0 ? "Дууссан" : x.n <= LOW ? "Цөөн үлдсэн" : "Хангалттай", Math.max(0, x.n) * x.p.price]; })));
+    var past = balAt != null, d = new Date(past ? balAt : Date.now());
+    csv("uldegdel-" + dayKey(d) + (past ? "-" + pad(d.getHours()) + pad(d.getMinutes()) : "") + ".csv",
+      [["Бараа", "Ангилал", "Зарах үнэ (₮)", past ? "Үлдэгдэл " + balWhen() + " (ш)" : "Үлдэгдэл (ш)", "Төлөв"].concat(past ? ["Одоогийн үлдэгдэл (ш)", "Түүнээс хойшхи өөрчлөлт"] : [], ["Үнийн дүн (₮)"])]
+      .concat(lastBal.map(function (x) { return [x.p.name, x.p.category || "", x.p.price, x.n, x.n <= 0 ? "Дууссан" : x.n <= LOW ? "Цөөн үлдсэн" : "Хангалттай"]
+        .concat(past ? [x.cur, x.cur - x.n] : [], [Math.max(0, x.n) * x.p.price]); })));
   };
+  $("printBal").onclick = function () { setSub("Үлдэгдэл · " + (balAt != null ? balWhen() + " үеийн байдлаар" : stamp(new Date()) + " (одоогийн)")); window.print(); };
 
   var docName = { "in": "орлого", "out": "зарлага", "act": "АКТ" };
   function drawDocs(t) {
@@ -940,12 +1225,15 @@ input.bad, textarea.bad { border-color:var(--bad) !important; outline-color:var(
     setTimeout(function () { document.body.classList.remove("print-doc"); }, 500);
   }
 
-  // Гүйлгээний түүх: хүчинтэй бүх хөдөлгөөн, он цагийн дарааллаар
+  // Гүйлгээний түүх: хүчинтэй бүх хөдөлгөөн, үлдэгдэлд нөлөөлөх мөчөөр (effTime) — «Огноо, цаг»-ийн үлдэгдэлтэй ижил дүрэм
   function moves() {
     var list = [];
-    docs.filter(function (d) { return !d.voided; }).sort(function (a, b) {
-      return a.date < b.date ? -1 : a.date > b.date ? 1 : a.createdAt < b.createdAt ? -1 : a.createdAt > b.createdAt ? 1 : 0;
-    }).forEach(function (d) { d.items.forEach(function (it) { list.push({ d: d, id: it.id, name: it.name, q: DTYPE[d.type][2] * it.qty }); }); });
+    docs.filter(function (d) { return !d.voided; }).map(function (d) { return { d: d, t: effTime(d) }; }).sort(function (a, b) {
+      return a.t - b.t || (a.d.createdAt < b.d.createdAt ? -1 : a.d.createdAt > b.d.createdAt ? 1 : 0);
+    }).forEach(function (x) {
+      var when = backdated(x.d) ? x.d.date : stamp(x.t), day = dayKey(x.t);
+      x.d.items.forEach(function (it) { list.push({ d: x.d, when: when, day: day, id: it.id, name: it.name, q: DTYPE[x.d.type][2] * it.qty }); });
+    });
     return list;
   }
   function drawHist() {
@@ -954,13 +1242,14 @@ input.bad, textarea.bad { border-color:var(--bad) !important; outline-color:var(
     fillSelect($("hProd"), [["", "Бараа: бүгд"]].concat(Object.keys(names).sort(function (a, b) { return names[a].localeCompare(names[b]); }).map(function (id) { return [id, names[id]]; })));
     var pid = $("hProd").value, t = $("hType").value, from = $("hFrom").value, to = $("hTo").value, bal = 0, tin = 0, tout = 0;
     lastHist = moves().map(function (m) { if (pid && m.id === pid) { bal += m.q; m.bal = bal; } return m; }).filter(function (m) {
-      return (!pid || m.id === pid) && (!t || m.d.type === t) && (!from || m.d.date >= from) && (!to || m.d.date <= to);
+      return (!pid || m.id === pid) && (!t || m.d.type === t) && (!from || m.day >= from) && (!to || m.day <= to);
     }).reverse();
     if (!lastHist.length) return empty($("histTable"), "Хөдөлгөөн алга");
     var head = ["Огноо", "Баримт", "Төрөл", "Бараа", N("Орсон"), N("Гарсан")].concat(pid ? [N("Үлдэгдэл")] : [], ["Тайлбар"]);
     table($("histTable"), head, lastHist.map(function (m) {
       if (m.q > 0) tin += m.q; else tout -= m.q;
-      return [m.d.date, h("b", { text: m.d.no }), typePill(m.d.type), m.name, N(m.q > 0 ? "+" + m.q : ""), N(m.q < 0 ? "−" + -m.q : "")]
+      var when = backdated(m.d) ? h("div", null, [m.when, h("div", { className: "muted small", text: "гараар огноолсон" })]) : m.when;
+      return [when, h("b", { text: m.d.no }), typePill(m.d.type), m.name, N(m.q > 0 ? "+" + m.q : ""), N(m.q < 0 ? "−" + -m.q : "")]
         .concat(pid ? [N(m.bal)] : [], [histNote(m.d)]);
     }), ["Нийт", "", "", "", N("+" + tin), N("−" + tout)].concat(pid ? [""] : [], [""]));
   }
@@ -970,27 +1259,22 @@ input.bad, textarea.bad { border-color:var(--bad) !important; outline-color:var(
   $("csvHist").onclick = function () {
     var pid = $("hProd").value;
     csv("guilgee-" + dayKey(new Date()) + ".csv", [["Огноо", "Баримт", "Төрөл", "Бараа", "Орсон", "Гарсан"].concat(pid ? ["Үлдэгдэл"] : [], ["Тайлбар"])]
-      .concat(lastHist.map(function (m) { return [m.d.date, m.d.no, DTYPE[m.d.type][0], m.name, m.q > 0 ? m.q : "", m.q < 0 ? -m.q : ""].concat(pid ? [m.bal] : [], [histNote(m.d)]); })));
+      .concat(lastHist.map(function (m) { return [m.when, m.d.no, DTYPE[m.d.type][0], m.name, m.q > 0 ? m.q : "", m.q < 0 ? -m.q : ""].concat(pid ? [m.bal] : [], [histNote(m.d)]); })));
   };
 
   // ---------- CSV ----------
   function csv(name, rows) {
     var text = "﻿" + rows.map(function (r) { return r.map(function (c) {
-      c = String(c == null ? "" : c); if (/^[=+\-@]/.test(c)) c = "'" + c;
+      var isNum = typeof c === "number"; c = String(c == null ? "" : c); if (!isNum && /^[=+\-@]/.test(c)) c = "'" + c; // сөрөг тоо томьёо биш
       return '"' + c.replace(/"/g, '""') + '"'; }).join(","); }).join("\r\n");
     var a = h("a", { href: URL.createObjectURL(new Blob([text], { type: "text/csv;charset=utf-8" })), download: name });
     document.body.appendChild(a); a.click(); a.remove();
   }
-  $("csvDaily").onclick = function () {
-    csv("udriin-tailan-" + dayKey(new Date()) + ".csv", [["Өдөр", "Захиалга", "Төлөгдсөн", "Төлөгдөөгүй", "Цуцалсан", "Зарагдсан (ш)", "Орлого (₮)"]]
-      .concat(lastDaily.map(function (r) { return [r.day, r.orders, r.paid, r.unpaid, r.cancelled, r.qty, r.revenue]; })));
-  };
   $("csvOrders").onclick = function () {
     csv("zahialguud-" + dayKey(new Date()) + ".csv", [["№", "Огноо", "Нэр", "Утас", "Хаяг", "Тайлбар", "Бараа", "Дүн (₮)", "Төлбөр", "Явц"]]
       .concat(filtered().map(function (o) { return [o.orderNo, stamp(o.time), o.name, o.phone, o.address, o.note,
         o.items.map(function (i) { return i.name + " x" + i.qty; }).join("; "), o.total, o.status === "paid" ? "Төлөгдсөн" : "Төлөгдөөгүй", FUL[o.fulfil][0]]; })));
   };
-  $("printBtn").onclick = function () { window.print(); };
 
   // ---------- тохиргоо: холбоо барих, сошиал хаяг ----------
   // Брэндийн тэмдэг: public/app.js-ийн ICONS-тэй ижил замууд (24×24, нэг өнгө)
@@ -1067,9 +1351,7 @@ input.bad, textarea.bad { border-color:var(--bad) !important; outline-color:var(
   ["q", "fPay", "fFul"].forEach(function (id) { $(id).addEventListener("input", drawOrders); });
   $("range").addEventListener("click", function (e) {
     if (!e.target.dataset.d) return;
-    days = Number(e.target.dataset.d);
-    [].forEach.call($("range").children, function (b) { b.classList.toggle("on", b === e.target); });
-    draw();
+    setPer(e.target.dataset.d); // тайлангийн хуудсуудтай нэг хугацаа
   });
   $("refresh").onclick = function () { load().catch(function () { setSub("⚠ Шинэчилж чадсангүй"); }); };
   $("logout").onclick = function () { try { sessionStorage.removeItem("eva_admin"); } catch (e) {} location.reload(); };
